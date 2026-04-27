@@ -1,0 +1,46 @@
+states:
+  IFNG_AP_ACTIVE:
+    description: "Interferon-gamma and antigen-presentation active malignant-cell state"
+    up:
+      - IFNG
+      - STAT1
+      - IRF1
+      - CXCL10
+      - HLA-A
+      - HLA-B
+      - B2M
+      - TAP1
+    down: []
+  EMT_TGFB_EXCLUSION:
+    description: "EMT, TGF-beta, and extracellular-matrix-associated exclusion state"
+    up:
+      - TGFB1
+      - VIM
+      - ZEB1
+      - SNAI1
+      - COL1A1
+      - FN1
+      - SERPINE1
+    down:
+      - EPCAM
+      - CDH1
+  HYPOXIA_STRESS:
+    description: "Hypoxia and stress-adaptation state"
+    up:
+      - HIF1A
+      - CA9
+      - VEGFA
+      - LDHA
+      - DDIT3
+      - ATF4
+    down: []
+  PROLIFERATIVE:
+    description: "Cell-cycle and mitotic malignant-cell state"
+    up:
+      - MKI67
+      - TOP2A
+      - CDK1
+      - CCNB1
+      - PCNA
+      - MCM2
+    down: []

@@ -1,0 +1,198 @@
+states:
+  CIRCUIT_STATE_01:
+    description: NMF-derived malignant-cell program CIRCUIT_STATE_01
+    up:
+    - MSRB2
+    - CYB561A3
+    - CYGB
+    - CTXND1
+    - APCDD1
+    - LGI3
+    - PCSK2
+    - SLC9A3
+    - SORBS2
+    - SEMA3D
+    - ANGPT2
+    - FAM89A
+    - CRTAC1
+    - FGFBP2
+    - NTM
+    - RAMP1
+    - WDR63
+    - TFAP2B
+    - LRRC75A
+    - ATP5PO
+    down:
+    - PITPNB
+    - ST13
+    - MPV17
+    - RAB34
+    - WDR33
+    - MIF
+    - SSR3
+    - AARS
+    - XRCC6
+    - COPZ1
+  CIRCUIT_STATE_02:
+    description: NMF-derived malignant-cell program CIRCUIT_STATE_02
+    up:
+    - BBX
+    - IFITM3
+    - LAMA4
+    - AHR
+    - IFRD1
+    - NUCB1
+    - TNFRSF19
+    - MCL1
+    - BACH1
+    - PLOD2
+    - IGFBP3
+    - IL1RAP
+    - LRP1
+    - IFI35
+    - ELOVL2
+    - GNG7
+    - TANC2
+    - NUCB2
+    - SNTB2
+    - NDRG1
+    down:
+    - RPL5
+    - H2AFZ
+    - RPS6
+    - EEF1B2
+    - ANP32B
+    - HSPD1
+    - NPM1
+    - BFAR
+    - RPL7A
+    - RPL15
+  CIRCUIT_STATE_03:
+    description: NMF-derived malignant-cell program CIRCUIT_STATE_03
+    up:
+    - LMNA
+    - GPNMB
+    - VIM
+    - TSPO
+    - MITF
+    - ZFAND5
+    - PSMB4
+    - SQSTM1
+    - VAT1
+    - PLP1
+    - PSAP
+    - ASAH1
+    - MYO10
+    - SNCA
+    - STOM
+    - CD44
+    - EID1
+    - SDCBP
+    - CYP27A1
+    - P4HB
+    down:
+    - H3F3A
+    - POLR2I
+    - UBA52
+    - DYNLL1
+    - MT-CO1
+    - MT-CO3
+    - MT-CO2
+    - MT-ATP6
+    - RPL21
+    - RPL24
+  CIRCUIT_STATE_04:
+    description: NMF-derived malignant-cell program CIRCUIT_STATE_04
+    up:
+    - CCT5
+    - SUMO1
+    - CSNK2B
+    - PA2G4
+    - CCT2
+    - MDH2
+    - TUBB4B
+    - XRCC5
+    - CKS1B
+    - HSPD1
+    - CACYBP
+    - PSMA4
+    - SNRPB
+    - PTGES3
+    - HMGN2
+    - C1QBP
+    - COPS6
+    - APEX1
+    - PMPCB
+    - PSMB5
+    down:
+    - MALAT1
+    - CD63
+    - TIMP2
+    - TERF2IP
+    - TRIP11
+    - RALGAPA1
+    - ASXL2
+    - SLC25A36
+    - DST
+    - SPTBN1
+  CIRCUIT_STATE_05:
+    description: NMF-derived malignant-cell program CIRCUIT_STATE_05
+    up:
+    - POLR1D
+    - NDUFAB1
+    - UBA2
+    - LSM2
+    - CHCHD6
+    - CUTA
+    - SNHG8
+    - PGLS
+    - LAGE3
+    - COX6B1
+    - MARCKSL1
+    - LAMTOR2
+    - ALKBH7
+    - GYPC
+    - PFDN2
+    - EDF1
+    - TXN
+    - BAX
+    - PTOV1
+    - PHACTR1
+    down:
+    - CHMP3
+    - ARL6IP1
+    - CFLAR
+    - PSMA2
+    - GGPS1
+    - CSNK1G1
+    - TMBIM4
+    - IER3IP1
+    - SLC35A3
+    - CUL1
+  CIRCUIT_STATE_06:
+    description: NMF-derived malignant-cell program CIRCUIT_STATE_06
+    up:
+    - EVA1B
+    - PLCG2
+    - FAM234A
+    - CYTOR
+    - SEZ6L2
+    - CIP2A
+    - TMEM163
+    - PRG4
+    - SCX
+    - LCN2
+    - WFDC2
+    - NLRP3
+    - IGLC2
+    down:
+    - MRPL39
+    - C1orf43
+    - SLC35B2
+    - NGRN
+    - RABGGTB
+    - CSRP1
+    - SLC25A3
+    - RHOA
+    - TMED2
+    - ADIPOR1

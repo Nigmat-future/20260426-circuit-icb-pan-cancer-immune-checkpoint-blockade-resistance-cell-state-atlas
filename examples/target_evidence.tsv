@@ -1,0 +1,5 @@
+gene	state_specificity	clinical_association	protein_evidence	dependency	drug_sensitivity	perturbation_reversal	safety	druggability
+AXL	0.92	0.82	0.70	0.55	0.64	0.72	0.45	0.88
+JAK1	0.58	0.65	0.62	0.50	0.42	0.35	0.60	0.86
+VEGFA	0.74	0.70	0.75	0.40	0.68	0.66	0.35	0.92
+MKI67	0.63	0.50	0.65	0.72	0.55	0.20	0.20	0.30

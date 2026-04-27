@@ -1,0 +1,14 @@
+state	n_cohorts	majority_direction	n_agree	n_disagree	direction_agreement	is_stable
+BENCHMARK_CELL_CYCLE_score	2	higher_in_responders	1	1	0.5	False
+BENCHMARK_CYTOLYTIC_SCORE_score	2	higher_in_responders	1	1	0.5	False
+BENCHMARK_EMT_TGFB_score	2	higher_in_responders	1	1	0.5	False
+BENCHMARK_HOUSEKEEPING_CONTROL_score	2	higher_in_responders	2	0	1.0	True
+BENCHMARK_HYPOXIA_score	2	higher_in_responders	1	1	0.5	False
+BENCHMARK_IFNG_ANTIGEN_PRESENTATION_score	2	higher_in_responders	2	0	1.0	True
+BENCHMARK_TCELL_INFLAMED_GEP_score	2	higher_in_responders	1	1	0.5	False
+CIRCUIT_STATE_01_score	2	higher_in_non_responders	2	0	1.0	True
+CIRCUIT_STATE_02_score	2	higher_in_non_responders	2	0	1.0	True
+CIRCUIT_STATE_03_score	2	higher_in_responders	1	1	0.5	False
+CIRCUIT_STATE_04_score	2	higher_in_responders	2	0	1.0	True
+CIRCUIT_STATE_05_score	2	higher_in_non_responders	2	0	1.0	True
+CIRCUIT_STATE_06_score	2	higher_in_responders	1	1	0.5	False

@@ -1,0 +1,121 @@
+states:
+  BENCHMARK_IFNG_ANTIGEN_PRESENTATION:
+    description: IFNG and antigen-presentation benchmark
+    up:
+    - IFNG
+    - CXCL9
+    - CXCL10
+    - CXCL11
+    - STAT1
+    - IRF1
+    - HLA-A
+    - HLA-B
+    - HLA-C
+    - B2M
+    - TAP1
+    - TAP2
+    - PSMB8
+    - PSMB9
+    - CD74
+    down: []
+  BENCHMARK_TCELL_INFLAMED_GEP:
+    description: T-cell inflamed gene expression profile benchmark
+    up:
+    - CD8A
+    - CD8B
+    - GZMA
+    - GZMB
+    - PRF1
+    - CXCL9
+    - CXCL10
+    - IDO1
+    - STAT1
+    - HLA-DRA
+    - CD274
+    - PDCD1LG2
+    - LAG3
+    - TIGIT
+    - IFNG
+    down: []
+  BENCHMARK_CYTOLYTIC_SCORE:
+    description: Cytolytic activity benchmark
+    up:
+    - GZMA
+    - PRF1
+    - GZMB
+    - GNLY
+    - NKG7
+    down: []
+  BENCHMARK_EMT_TGFB:
+    description: EMT and TGF-beta exclusion benchmark
+    up:
+    - TGFB1
+    - TGFBR1
+    - TGFBR2
+    - SMAD2
+    - SMAD3
+    - VIM
+    - ZEB1
+    - ZEB2
+    - SNAI1
+    - SNAI2
+    - FN1
+    - COL1A1
+    - COL1A2
+    - SERPINE1
+    - SERPINE2
+    - LGALS1
+    down: []
+  BENCHMARK_HYPOXIA:
+    description: Hypoxia-stress benchmark
+    up:
+    - HIF1A
+    - CA9
+    - VEGFA
+    - LDHA
+    - SLC2A1
+    - PDK1
+    - BNIP3
+    - DDIT3
+    - ATF4
+    - HSPA5
+    - HSP90AA1
+    - HSP90AB1
+    - ENO1
+    - ALDOA
+    down: []
+  BENCHMARK_CELL_CYCLE:
+    description: Cell-cycle/proliferation benchmark
+    up:
+    - MKI67
+    - TOP2A
+    - CDK1
+    - CCNB1
+    - CCNB2
+    - CCNA2
+    - PCNA
+    - MCM2
+    - MCM3
+    - MCM4
+    - MCM5
+    - MCM6
+    - MCM7
+    - BIRC5
+    - AURKA
+    - AURKB
+    down: []
+  BENCHMARK_HOUSEKEEPING_CONTROL:
+    description: Housekeeping/stress control benchmark
+    up:
+    - GAPDH
+    - ACTB
+    - ACTG1
+    - EEF1A1
+    - EEF1G
+    - TPT1
+    - RACK1
+    - PPIA
+    - NPM1
+    - H3F3A
+    - H3F3B
+    down: []

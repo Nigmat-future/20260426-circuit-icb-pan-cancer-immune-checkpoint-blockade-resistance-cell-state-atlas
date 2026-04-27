@@ -1,0 +1,32 @@
+project:
+  id: CIRCUIT-ICB
+  title: "CIRCUIT-ICB: A cell-state-resolved and perturbation-aware pan-cancer atlas of immune checkpoint blockade resistance"
+  created: "2026-04-26"
+  primary_discovery_record: "https://zenodo.org/records/14511579"
+
+paths:
+  zenodo_workbook: "data/raw/zenodo/v4_ICB_datasets.xlsx"
+  manifests: "data/manifests"
+  processed: "data/processed"
+  results: "results"
+
+analysis:
+  primary_response_contrast:
+    positive: ["CR", "PR", "R", "DCB", "responder"]
+    negative: ["PD", "NR", "non_responder", "primary_resistance"]
+    exclude: ["SD", "mixed", "unknown", "not_available"]
+  rank_score:
+    min_genes_present: 3
+    missing_gene_policy: "report"
+  target_priority:
+    missing_evidence_policy: "zero_with_flag"
+
+validation:
+  internal:
+    - "leave_one_study_out"
+    - "leave_one_cancer_type_out"
+    - "patient_level_bootstrap"
+  external:
+    - "leave_one_bulk_cohort_out"
+    - "pretreatment_only_sensitivity"
+    - "response_label_sensitivity"

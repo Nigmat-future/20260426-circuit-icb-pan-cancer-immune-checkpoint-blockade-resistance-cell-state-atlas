@@ -1,0 +1,20 @@
+weights:
+  state_specificity: 1.5
+  clinical_association: 1.5
+  protein_evidence: 1.0
+  dependency: 1.2
+  drug_sensitivity: 1.0
+  perturbation_reversal: 1.2
+  safety: 1.0
+  druggability: 1.1
+
+required_columns:
+  - gene
+  - state_specificity
+  - clinical_association
+  - protein_evidence
+  - dependency
+  - drug_sensitivity
+  - perturbation_reversal
+  - safety
+  - druggability

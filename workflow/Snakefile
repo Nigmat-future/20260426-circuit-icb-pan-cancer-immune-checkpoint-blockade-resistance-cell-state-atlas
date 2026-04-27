@@ -1,0 +1,418 @@
+configfile: "config/project.yaml"
+
+
+rule all:
+    input:
+        "data/raw/zenodo/zenodo_14511579_files.tsv",
+        "data/manifests/icb_sc_discovery_datasets.tsv",
+        "data/manifests/icb_sc_discovery_files.tsv",
+        "data/manifests/icb_sc_treatment_information.tsv",
+        "results/tables/example_state_scores.tsv",
+        "results/tables/zenodo_pseudobulk_state_scores.tsv",
+        "results/tables/nmf_states/nmf_state_activity.tsv",
+        "results/tables/nmf_states/nmf_state_markers.tsv",
+        "results/tables/state_annotation/state_annotation.tsv",
+        "results/tables/state_annotation/final_state_signatures.yml",
+        "results/tables/validation/discovery_nmf.univariable.tsv",
+        "results/tables/validation/discovery_nmf.leave_one_cohort.tsv",
+        "results/tables/validation/locked_external_bulk_nmf.univariable.tsv",
+        "results/tables/target_evidence/hpa_safety.tsv",
+        "results/tables/target_evidence/hpa_atlas_tcga_druggability.tsv",
+        "results/tables/target_evidence/depmap_dependency.tsv",
+        "results/tables/target_evidence/prism_drug_sensitivity.tsv",
+        "results/tables/target_evidence/lincs_state_reversal.tsv",
+        "results/tables/target_evidence/lincs_gene_reversal.tsv",
+        "results/tables/target_evidence/circuit_icb_target_priority.tsv",
+        "results/tables/target_evidence/circuit_icb_target_priority.merged.tsv",
+        "results/tables/target_evidence/circuit_icb_target_priority.annotated.tsv",
+        "results/tables/target_evidence/core_resistance_target_priority.tsv",
+        "results/tables/publish_v1/manuscript_ready_summary.tsv",
+        "results/tables/publish_v1/tcga/tcga_state_scores.tsv",
+        "results/tables/publish_v1/cptac/cptac_protein_evidence_status.tsv",
+        "results/tables/example_target_priority.tsv",
+        "results/tables/release_index.tsv"
+
+
+rule fetch_zenodo_metadata:
+    output:
+        workbook="data/raw/zenodo/v4_ICB_datasets.xlsx",
+        files="data/raw/zenodo/zenodo_14511579_files.tsv"
+    shell:
+        "python scripts/00_fetch_zenodo_metadata.py --record 14511579 --out-dir data/raw/zenodo"
+
+
+rule build_icb_manifest:
+    input:
+        workbook="data/raw/zenodo/v4_ICB_datasets.xlsx"
+    output:
+        discovery="data/manifests/icb_sc_discovery_datasets.tsv",
+        files="data/manifests/icb_sc_discovery_files.tsv",
+        treatment="data/manifests/icb_sc_treatment_information.tsv"
+    shell:
+        "python scripts/00_build_icb_manifest.py --workbook {input.workbook} --out-dir data/manifests"
+
+
+rule example_state_scores:
+    input:
+        expression="examples/bulk_expression_tpm.tsv",
+        signatures="config/state_signatures.example.yml"
+    output:
+        "results/tables/example_state_scores.tsv"
+    shell:
+        "python scripts/01_score_bulk_states.py --expression {input.expression} --signatures {input.signatures} --out {output}"
+
+
+rule example_target_priority:
+    input:
+        evidence="examples/target_evidence.tsv",
+        weights="config/target_weights.yml"
+    output:
+        "results/tables/example_target_priority.tsv"
+    shell:
+        "python scripts/02_prioritize_targets.py --evidence {input.evidence} --weights {input.weights} --out {output}"
+
+
+rule extract_nmf_states:
+    output:
+        activity="results/tables/nmf_states/nmf_state_activity.tsv",
+        markers="results/tables/nmf_states/nmf_state_markers.tsv",
+        signatures="results/tables/nmf_states/nmf_state_signatures.yml"
+    shell:
+        "python scripts/05_extract_nmf_states.py --input-dir data/raw/zenodo/malignant_pseudobulk --out-dir results/tables/nmf_states --k 7 --scan-k 4-8 --n-top-genes 1000 --max-iter 500 --scan-max-iter 250"
+
+
+rule score_zenodo_pseudobulk:
+    input:
+        signatures="config/state_signatures.example.yml"
+    output:
+        scores="results/tables/zenodo_pseudobulk_state_scores.tsv",
+        profile="data/manifests/zenodo_pseudobulk_profile.tsv"
+    shell:
+        "python scripts/04_score_zenodo_pseudobulk.py --pseudobulk-dir data/raw/zenodo/pseudobulk --signatures {input.signatures} --out {output.scores} --profile-out {output.profile}"
+
+
+rule annotate_states:
+    input:
+        markers="results/tables/nmf_states/nmf_state_markers.tsv",
+        pathways="config/pathway_sets.yml"
+    output:
+        annotation="results/tables/state_annotation/state_annotation.tsv",
+        enrichment="results/tables/state_annotation/state_pathway_enrichment.tsv",
+        signatures="results/tables/state_annotation/final_state_signatures.yml"
+    shell:
+        "python scripts/11_annotate_and_filter_states.py --markers {input.markers} --pathways {input.pathways} --out-dir results/tables/state_annotation"
+
+
+rule validate_discovery_nmf:
+    input:
+        scores="results/tables/nmf_states/nmf_state_activity.tsv"
+    output:
+        univariable="results/tables/validation/discovery_nmf.univariable.tsv",
+        loco="results/tables/validation/discovery_nmf.leave_one_cohort.tsv"
+    shell:
+        "python scripts/06_validate_state_scores.py --scores {input.scores} --out-prefix results/tables/validation/discovery_nmf --outcome-col Combined_outcome --cohort-col dataset"
+
+
+rule prepare_gse78220:
+    output:
+        expression="data/processed/bulk_icb/GSE78220/expression.tsv",
+        clinical="data/processed/bulk_icb/GSE78220/clinical.tsv"
+    shell:
+        "python scripts/07_prepare_geo_bulk.py --cohort GSE78220 --out-dir data/processed/bulk_icb"
+
+
+rule prepare_gse91061:
+    output:
+        expression="data/processed/bulk_icb/GSE91061/expression.tsv",
+        clinical="data/processed/bulk_icb/GSE91061/clinical.tsv"
+    shell:
+        "python scripts/07_prepare_geo_bulk.py --cohort GSE91061 --out-dir data/processed/bulk_icb"
+
+
+rule prepare_gse115821:
+    output:
+        expression="data/processed/bulk_icb/GSE115821/expression.tsv",
+        clinical="data/processed/bulk_icb/GSE115821/clinical.tsv"
+    shell:
+        "python scripts/07_prepare_geo_bulk.py --cohort GSE115821 --out-dir data/processed/bulk_icb"
+
+
+rule prepare_gse176307:
+    output:
+        expression="data/processed/bulk_icb/GSE176307/expression.tsv",
+        clinical="data/processed/bulk_icb/GSE176307/clinical.tsv"
+    shell:
+        "python scripts/07_prepare_geo_bulk.py --cohort GSE176307 --out-dir data/processed/bulk_icb"
+
+
+rule prepare_gse135222:
+    output:
+        expression="data/processed/bulk_icb/GSE135222/expression.tsv",
+        clinical="data/processed/bulk_icb/GSE135222/clinical.tsv"
+    shell:
+        "python scripts/07_prepare_geo_bulk.py --cohort GSE135222 --out-dir data/processed/bulk_icb"
+
+
+rule prepare_gse126044:
+    output:
+        expression="data/processed/bulk_icb/GSE126044/expression.tsv",
+        clinical="data/processed/bulk_icb/GSE126044/clinical.tsv"
+    shell:
+        "python scripts/07_prepare_geo_bulk.py --cohort GSE126044 --out-dir data/processed/bulk_icb"
+
+
+rule score_gse78220:
+    input:
+        expression="data/processed/bulk_icb/GSE78220/expression.tsv",
+        signatures="results/tables/nmf_states/nmf_state_signatures.yml"
+    output:
+        "results/tables/bulk_icb/GSE78220.state_scores.tsv"
+    shell:
+        "python scripts/01_score_bulk_states.py --expression {input.expression} --signatures {input.signatures} --out {output} --min-genes-present 10"
+
+
+rule score_gse91061:
+    input:
+        expression="data/processed/bulk_icb/GSE91061/expression.tsv",
+        signatures="results/tables/nmf_states/nmf_state_signatures.yml"
+    output:
+        "results/tables/bulk_icb/GSE91061.state_scores.tsv"
+    shell:
+        "python scripts/01_score_bulk_states.py --expression {input.expression} --signatures {input.signatures} --out {output} --min-genes-present 10"
+
+
+rule target_evidence:
+    input:
+        markers="results/tables/nmf_states/nmf_state_markers.tsv",
+        gse78220_expr="data/processed/bulk_icb/GSE78220/expression.tsv",
+        gse78220_clin="data/processed/bulk_icb/GSE78220/clinical.tsv",
+        gse91061_expr="data/processed/bulk_icb/GSE91061/expression.tsv",
+        gse91061_clin="data/processed/bulk_icb/GSE91061/clinical.tsv"
+    output:
+        evidence="results/tables/target_evidence/circuit_icb_target_evidence.tsv",
+        priority="results/tables/target_evidence/circuit_icb_target_priority.tsv"
+    shell:
+        "python scripts/09_build_target_evidence_matrix.py --markers {input.markers} --out-evidence {output.evidence} --out-priority {output.priority}"
+
+
+rule hpa_safety:
+    input:
+        hpa="data/raw/hpa/rna_tissue_consensus.tsv.zip",
+        candidates="results/tables/target_evidence/circuit_icb_target_evidence.tsv"
+    output:
+        "results/tables/target_evidence/hpa_safety.tsv"
+    shell:
+        "python scripts/12_build_hpa_safety.py --hpa {input.hpa} --candidates {input.candidates} --out {output}"
+
+
+rule hpa_atlas_evidence:
+    input:
+        atlas="data/raw/hpa/proteinatlas.tsv.zip",
+        candidates="results/tables/target_evidence/circuit_icb_target_evidence.tsv"
+    output:
+        "results/tables/target_evidence/hpa_atlas_tcga_druggability.tsv"
+    shell:
+        "python scripts/19_build_hpa_atlas_evidence.py --atlas {input.atlas} --candidates {input.candidates} --out {output}"
+
+
+rule depmap_dependency:
+    input:
+        dependency="data/raw/depmap/26Q1/CRISPRGeneDependency.csv",
+        model="data/raw/depmap/26Q1/Model.csv",
+        common="data/raw/depmap/26Q1/CRISPRInferredCommonEssentials.csv",
+        candidates="results/tables/target_evidence/circuit_icb_target_evidence.tsv"
+    output:
+        "results/tables/target_evidence/depmap_dependency.tsv"
+    shell:
+        "python scripts/14_build_depmap_dependency.py --dependency-matrix {input.dependency} --model {input.model} --common-essential {input.common} --candidates {input.candidates} --out {output}"
+
+
+rule prism_drug_sensitivity:
+    input:
+        prism="data/raw/prism/secondary-screen-dose-response-curve-parameters.csv",
+        candidates="results/tables/target_evidence/circuit_icb_target_evidence.tsv"
+    output:
+        "results/tables/target_evidence/prism_drug_sensitivity.tsv"
+    shell:
+        "python scripts/16_build_prism_sensitivity.py --prism {input.prism} --candidates {input.candidates} --out {output}"
+
+
+rule lincs_state_reversal:
+    input:
+        signatures="results/tables/state_annotation/final_state_signatures.yml",
+        markers="results/tables/nmf_states/nmf_state_markers.tsv",
+        annotation="results/tables/state_annotation/state_annotation.tsv"
+    output:
+        "results/tables/target_evidence/lincs_state_reversal.tsv"
+    shell:
+        "python scripts/17_query_l1000cds2_reversal.py --signatures {input.signatures} --markers {input.markers} --state-annotation {input.annotation} --out {output}"
+
+
+rule lincs_gene_reversal:
+    input:
+        lincs="results/tables/target_evidence/lincs_state_reversal.tsv",
+        prism="data/raw/prism/secondary-screen-dose-response-curve-parameters.csv",
+        candidates="results/tables/target_evidence/circuit_icb_target_evidence.tsv"
+    output:
+        "results/tables/target_evidence/lincs_gene_reversal.tsv"
+    shell:
+        "python scripts/18_build_lincs_gene_reversal.py --lincs {input.lincs} --prism {input.prism} --candidates {input.candidates} --out {output}"
+
+
+rule merged_target_evidence:
+    input:
+        base="results/tables/target_evidence/circuit_icb_target_evidence.tsv",
+        tcga="results/tables/target_evidence/hpa_atlas_tcga_druggability.tsv",
+        depmap="results/tables/target_evidence/depmap_dependency.tsv",
+        prism="results/tables/target_evidence/prism_drug_sensitivity.tsv",
+        lincs="results/tables/target_evidence/lincs_gene_reversal.tsv",
+        safety="results/tables/target_evidence/hpa_safety.tsv"
+    output:
+        evidence="results/tables/target_evidence/circuit_icb_target_evidence.merged.tsv",
+        priority="results/tables/target_evidence/circuit_icb_target_priority.merged.tsv"
+    shell:
+        "python scripts/10_merge_external_evidence.py --base {input.base} --tcga {input.tcga} --depmap {input.depmap} --prism {input.prism} --lincs {input.lincs} --safety {input.safety} --out-evidence {output.evidence} --out-priority {output.priority}"
+
+
+rule annotated_target_priority:
+    input:
+        priority="results/tables/target_evidence/circuit_icb_target_priority.merged.tsv",
+        annotation="results/tables/state_annotation/state_annotation.tsv"
+    output:
+        annotated="results/tables/target_evidence/circuit_icb_target_priority.annotated.tsv",
+        core="results/tables/target_evidence/core_resistance_target_priority.tsv"
+    shell:
+        "python scripts/15_annotate_target_priority.py --priority {input.priority} --state-annotation {input.annotation} --out {output.annotated} --out-core {output.core}"
+
+
+rule publish_v1_cohorts:
+    input:
+        "data/processed/bulk_icb/GSE78220/expression.tsv",
+        "data/processed/bulk_icb/GSE78220/clinical.tsv",
+        "data/processed/bulk_icb/GSE91061/expression.tsv",
+        "data/processed/bulk_icb/GSE91061/clinical.tsv",
+        "data/processed/bulk_icb/GSE115821/expression.tsv",
+        "data/processed/bulk_icb/GSE115821/clinical.tsv",
+        "data/processed/bulk_icb/GSE176307/expression.tsv",
+        "data/processed/bulk_icb/GSE176307/clinical.tsv",
+        "data/processed/bulk_icb/GSE135222/expression.tsv",
+        "data/processed/bulk_icb/GSE135222/clinical.tsv",
+        "data/processed/bulk_icb/GSE126044/expression.tsv",
+        "data/processed/bulk_icb/GSE126044/clinical.tsv"
+    output:
+        registry="data/manifests/publish_v1_bulk_icb_cohorts.tsv",
+        summary="results/tables/publish_v1/cohort_summary.tsv",
+        curation="results/tables/publish_v1/cohort_curation_log.tsv",
+        benchmark="config/benchmark_signatures.yml"
+    shell:
+        "python scripts/21_build_publish_v1_cohorts.py --benchmark-signatures {output.benchmark}"
+
+
+rule publish_v1_scores:
+    input:
+        registry="data/manifests/publish_v1_bulk_icb_cohorts.tsv",
+        states="results/tables/state_annotation/final_state_signatures.yml",
+        benchmark="config/benchmark_signatures.yml"
+    output:
+        scores="results/tables/publish_v1/publish_v1_all_scores.tsv",
+        expression="results/tables/publish_v1/publish_v1_all_expression.tsv"
+    shell:
+        "python scripts/22_score_publish_v1_cohorts.py --registry {input.registry} --state-signatures {input.states} --benchmark-signatures {input.benchmark}"
+
+
+rule publish_v1_validation:
+    input:
+        scores="results/tables/publish_v1/publish_v1_all_scores.tsv",
+        expression="results/tables/publish_v1/publish_v1_all_expression.tsv",
+        states="results/tables/state_annotation/final_state_signatures.yml"
+    output:
+        univariable="results/tables/publish_v1/validation/publish_v1_univariable_ci.tsv",
+        meta="results/tables/publish_v1/validation/publish_v1_random_effects_meta.tsv",
+        loco="results/tables/publish_v1/validation/publish_v1_leave_one_cohort.tsv",
+        random_p="results/tables/publish_v1/validation/publish_v1_random_signature_pvalues.tsv"
+    shell:
+        "python scripts/23_validate_publish_v1.py --scores {input.scores} --expression {input.expression} --state-signatures {input.states}"
+
+
+rule publish_v1_targets:
+    input:
+        annotated="results/tables/target_evidence/circuit_icb_target_priority.annotated.tsv"
+    output:
+        all_targets="results/tables/publish_v1/target_evidence/publish_v1_target_priority_all.tsv",
+        core_targets="results/tables/publish_v1/target_evidence/publish_v1_core_resistance_target_priority.tsv"
+    shell:
+        "python scripts/24_build_publish_v1_target_priority.py --annotated {input.annotated}"
+
+
+rule publish_v1_tcga_landscape:
+    input:
+        states="results/tables/state_annotation/final_state_signatures.yml",
+        benchmark="config/benchmark_signatures.yml"
+    output:
+        scores="results/tables/publish_v1/tcga/tcga_state_scores.tsv",
+        landscape="results/tables/publish_v1/tcga/tcga_state_landscape_by_cancer.tsv",
+        survival="results/tables/publish_v1/tcga/tcga_state_survival_os.tsv",
+        immune="results/tables/publish_v1/tcga/tcga_state_immune_proxy_correlations.tsv"
+    shell:
+        "python scripts/26_build_tcga_xena_state_landscape.py --state-signatures {input.states} --benchmark-signatures {input.benchmark}"
+
+
+rule publish_v1_cptac_status:
+    output:
+        "results/tables/publish_v1/cptac/cptac_protein_evidence_status.tsv"
+    shell:
+        "python scripts/27_write_cptac_status.py --out {output}"
+
+
+rule publish_v1_summary:
+    input:
+        "results/tables/publish_v1/cohort_summary.tsv",
+        "results/tables/publish_v1/cohort_curation_log.tsv",
+        "results/tables/publish_v1/validation/publish_v1_univariable_ci.tsv",
+        "results/tables/publish_v1/validation/publish_v1_random_effects_meta.tsv",
+        "results/tables/publish_v1/target_evidence/publish_v1_core_resistance_target_priority.tsv"
+    output:
+        "results/tables/publish_v1/manuscript_ready_summary.tsv"
+    shell:
+        "python scripts/25_build_publish_v1_manuscript_summary.py --out {output}"
+
+
+rule combine_locked_external_bulk:
+    input:
+        "results/tables/bulk_icb/GSE78220.state_scores.tsv",
+        "results/tables/bulk_icb/GSE91061.state_scores.tsv",
+        "data/processed/bulk_icb/GSE78220/clinical.tsv",
+        "data/processed/bulk_icb/GSE91061/clinical.tsv"
+    output:
+        "results/tables/bulk_icb/locked_external_bulk_state_scores.tsv"
+    shell:
+        "python scripts/08_combine_locked_external_bulk.py"
+
+
+rule validate_locked_external_bulk:
+    input:
+        scores="results/tables/bulk_icb/locked_external_bulk_state_scores.tsv"
+    output:
+        univariable="results/tables/validation/locked_external_bulk_nmf.univariable.tsv",
+        loco="results/tables/validation/locked_external_bulk_nmf.leave_one_cohort.tsv"
+    shell:
+        "python scripts/06_validate_state_scores.py --scores {input.scores} --out-prefix results/tables/validation/locked_external_bulk_nmf --outcome-col response_original --cohort-col cohort_id"
+
+
+rule release_index:
+    input:
+        "results/tables/example_state_scores.tsv",
+        "results/tables/zenodo_pseudobulk_state_scores.tsv",
+        "results/tables/nmf_states/nmf_state_activity.tsv",
+        "results/tables/nmf_states/nmf_state_markers.tsv",
+        "results/tables/validation/discovery_nmf.univariable.tsv",
+        "results/tables/validation/discovery_nmf.leave_one_cohort.tsv",
+        "results/tables/validation/locked_external_bulk_nmf.univariable.tsv",
+        "results/tables/target_evidence/circuit_icb_target_priority.tsv",
+        "results/tables/target_evidence/circuit_icb_target_priority.annotated.tsv",
+        "results/tables/target_evidence/core_resistance_target_priority.tsv",
+        "results/tables/example_target_priority.tsv"
+    output:
+        "results/tables/release_index.tsv"
+    shell:
+        "python scripts/03_make_release_tables.py --results-dir results/tables --out {output}"

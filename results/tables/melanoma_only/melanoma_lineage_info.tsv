@@ -1,0 +1,7 @@
+state	lineage_class	lineage_overlap_fraction	is_lineage_specific
+CIRCUIT_STATE_01	pan_cancer	0.0	False
+CIRCUIT_STATE_02	pan_cancer	0.0	False
+CIRCUIT_STATE_03	pan_cancer	0.1	False
+CIRCUIT_STATE_04	pan_cancer	0.0	False
+CIRCUIT_STATE_05	pan_cancer	0.0	False
+CIRCUIT_STATE_06	pan_cancer	0.0	False
