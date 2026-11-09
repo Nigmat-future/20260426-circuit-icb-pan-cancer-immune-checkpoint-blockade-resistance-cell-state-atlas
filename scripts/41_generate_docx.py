@@ -395,10 +395,11 @@ add_para(
 )
 
 add_figure("fig1_k_scan.png",
-           "Figure 1. NMF component selection by stability analysis. Bars show reconstruction "
-           "error; blue line shows pairwise assignment stability across 10 replicate factorizations. "
-           "Dashed line indicates 95% stability threshold. k = 6 was selected as the largest "
-           "stable decomposition.", width=5.5)
+           "Figure 1. NMF component selection by stability analysis (43 melanoma pseudobulk "
+           "profiles, k = 2–8). (A) Pairwise assignment stability across 10 replicate "
+           "factorizations; the dashed line marks the 0.95 threshold and the circled point the "
+           "selected k = 6, the largest stable decomposition. (B) Reconstruction error, mean of "
+           "the 10 runs (standard deviations are smaller than the markers).", width=3.4)
 
 # 3.2
 add_heading("3.2 Specificity filtering yields biologically interpretable state markers", level=2)
@@ -415,9 +416,10 @@ add_para(
 )
 
 add_figure("fig2_markers.png",
-           "Figure 2. Top 10 marker genes per CIRCUIT state ranked by specificity ratio "
-           "(loading in state / mean loading across all states). Darker bars indicate higher "
-           "specificity. Gene names are shown for each state.", width=6.2)
+           "Figure 2. Marker specificity of the six CIRCUIT states. For each state, the 10 genes "
+           "with the highest NMF loadings are shown, ordered by specificity ratio (loading in the "
+           "state divided by the mean loading across all states). The dashed line marks the 2.0 "
+           "specificity filter applied during marker selection.", width=6.3)
 
 # 3.3
 add_heading("3.3 Two resistance-associated states significantly outperform random signatures", level=2)
@@ -435,10 +437,14 @@ add_para(
 
 add_figure("fig3_auroc_permutation.png",
            "Figure 3. Predictive performance of CIRCUIT states versus benchmark signatures. "
-           "(A) Forest plot showing AUROC with 95% bootstrap CI for each signature in pooled "
-           "melanoma validation. Blue = CIRCUIT states; red = benchmarks. (B) Permutation null "
-           "distribution for STATE_01 (1000 random gene sets); observed AUROC = 0.729, "
-           "P = 0.049.", width=6.0)
+           "(A) Pooled AUROC (best direction) with 95% bootstrap CI (1,000 resamples) in 76 "
+           "melanoma patients from GSE78220 and GSE91061 (25 responders). Blue, CIRCUIT states; "
+           "grey, benchmark signatures. Higher in: response group with higher scores "
+           "(NR, non-responders; R, responders). P (perm.): permutation P against 1,000 "
+           "size-matched random signatures; filled blue markers, P < 0.05. The housekeeping "
+           "signature is a negative control. (B) AUROC of the 1,000 random signatures matched in "
+           "size to STATE_01; shaded bars mark random signatures at or above the observed AUROC "
+           "of 0.729 (P = 0.049).", width=6.3)
 
 # 3.4
 add_heading("3.4 Multi-state model outperforms benchmarks in cross-validation", level=2)
@@ -458,10 +464,13 @@ add_para(
 )
 
 add_figure("fig4_cv_calibration.png",
-           "Figure 4. Cross-validated prediction and calibration. (A) Repeated 5-fold CV AUROC "
-           "(50 repeats) for three models: CIRCUIT states only (blue), benchmark signatures only "
-           "(red), and combined (green). Error bars show 95% CI. (B) Calibration curve showing "
-           "predicted versus observed response fractions across five quantile bins.", width=6.0)
+           "Figure 4. Cross-validated prediction and calibration (n = 76). (A) Mean AUROC of "
+           "elastic-net models built on the six CIRCUIT states, the seven benchmark signatures, or "
+           "both, in repeated stratified 5-fold cross-validation (50 repeats). Error bars span the "
+           "2.5th to 97.5th percentiles of the 50 repeat-level mean AUROCs. (B) Calibration of the "
+           "CIRCUIT model: out-of-fold predicted probabilities, averaged over repeats, in five "
+           "quantile bins of 15–16 patients against the observed response rate. Error bars show "
+           "Wilson 95% CIs; the dashed line marks perfect calibration.", width=6.3)
 
 # 3.5
 add_heading("3.5 Direction stability supports reproducible cohort effects", level=2)
@@ -475,9 +484,11 @@ add_para(
 )
 
 add_figure("fig5_direction_stability.png",
-           "Figure 5. Direction stability across melanoma validation cohorts. Bars show the "
-           "fraction of cohorts supporting the majority direction for each CIRCUIT state. Blue "
-           "bars indicate stable direction (≥80% agreement).", width=4.2)
+           "Figure 5. Direction of association in each melanoma validation cohort. Points show "
+           "the per-cohort AUROC of each CIRCUIT state oriented toward responders (values below "
+           "0.5 mean higher scores in non-responders), with 95% bootstrap CIs, for GSE78220 "
+           "(circles, n = 27) and GSE91061 (squares, n = 49). Blue states keep the same direction "
+           "in both cohorts (2/2); grey states change direction (1/2).", width=3.4)
 
 # ════════════════════════════════════════════════════════════════
 # TABLES
