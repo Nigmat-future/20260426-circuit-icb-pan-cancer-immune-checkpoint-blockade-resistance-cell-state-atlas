@@ -1,103 +1,100 @@
-<div align="center">
-  
-# 🧬 CIRCUIT-ICB
+# CIRCUIT-ICB
 
-**C**omputational **I**nference of **R**esistance **C**ell-states **U**sing **I**ntegrated **T**ranscriptomics in **I**mmune **C**heckpoint **B**lockade
+**C**ell-state **I**dentification and **R**esistance **C**lassification **U**sing **I**ntegrated **T**ranscriptomic Inference for **I**mmune **C**heckpoint **B**lockade
 
-[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Snakemake](https://img.shields.io/badge/Workflow-Snakemake-brightgreen.svg)](https://snakemake.readthedocs.io/)
-[![Zenodo](https://img.shields.io/badge/Data_Anchor-Zenodo_14511579-blue.svg)](https://zenodo.org/record/14511579)
+[![Workflow: Snakemake](https://img.shields.io/badge/Workflow-Snakemake-brightgreen.svg)](https://snakemake.readthedocs.io/)
 
-*A reproducible, scalable research framework for discovering malignant-cell immune checkpoint blockade (ICB) resistance states and linking them to clinical response, multi-omic evidence, and druggable vulnerabilities across pan-cancer datasets.*
+This repository contains the code and result tables for the manuscript
 
-</div>
+> Rahim N. *CIRCUIT-ICB: NMF-based discovery of malignant cell states predicting immune checkpoint blockade resistance in melanoma.* Manuscript under review at *Bioinformatics*.
 
----
+The manuscript source is [`manuscript/manuscript.md`](manuscript/manuscript.md). Every number in the main text and tables can be traced to a file under [`results/tables/melanoma_only/`](results/tables/melanoma_only/) (see the mapping below).
 
-## 🎯 Working Hypothesis
+## What the manuscript reports
 
-ICB therapy failure is strongly associated with recurrent **malignant-cell-intrinsic states**. By learning these states from patient-derived single-cell RNA-seq (scRNA-seq), transferring them to bulk RNA-seq cohorts, and mapping them to expansive molecular networks, **CIRCUIT-ICB** connects transcriptional resistance signatures directly to **druggable vulnerabilities** via comprehensive evidence synthesis.
+- **Discovery.** Non-negative matrix factorization (NMF) of 43 malignant-cell pseudobulk profiles from three melanoma scRNA-seq studies (Jerby-Arnon 2018, Pozniak 2022, Tirosh 2016), after excluding housekeeping genes and filtering markers by a specificity ratio of at least 2. Stability-guided selection gives k = 6 states.
+- **Validation.** The six states are scored with a within-sample rank method in two pre-treatment anti-PD-1 melanoma cohorts, GSE78220 and GSE91061 (76 patients, 25 responders).
+- **Results.** STATE_01 and STATE_05 are higher in non-responders, each with pooled AUROC 0.729 (permutation P = 0.049 and 0.047 against 1,000 size-matched random signatures). The best benchmark signature (IFNG / antigen presentation) reaches 0.616. A six-state elastic-net model reaches a repeated cross-validated AUROC of 0.694 (95% interval 0.600 to 0.761), against 0.560 for the benchmark signatures.
 
-## 🚀 Key Features & Implementation Status
+## Manuscript items and their source files
 
-- **Robust State Inference:** Extracts malignant-only NMF states from public pseudobulk matrices and annotates them into programs (e.g., IFNG/antigen presentation, hypoxia-stress, EMT/TGF-beta exclusion, lineage-context).
-- **Extensive External Validation:** Prepares, scores, and evaluates rigorous external bulk ICB validation across 6 cohorts (GSE78220, GSE91061, GSE115821, GSE176307, GSE135222, GSE126044) comprising 212 binary response/DCB samples. Includes bootstrap CI, random-effects meta-analysis, and leave-one-cohort cross-validation.
-- **Multimodal Target Prioritization:** Synthesizes a comprehensive evidence matrix integrating:
-  - State specificity & External ICB clinical association
-  - HPA/TCGA prognosis profiles
-  - DepMap genetic dependencies
-  - PRISM drug sensitivity panels
-  - LINCS L1000 reversal bridge profiling
-  - HPA safety and druggability mappings
-- **Large-Scale Multi-Omic Mapping:** Scores 9,163 primary tumors from the TCGA Xena landscape using z-score state signatures, coupled with OS/PFI Cox regressions and immune-proxy correlations.
-- **Proteomic Adapter Readiness:** Built-in hooks for CPTAC/PDC protein evidence integration.
+All paths are relative to `results/tables/melanoma_only/`.
 
-## 📂 Repository Architecture
+| Manuscript item | Source file(s) |
+|---|---|
+| Table 1, Figure S1 (NMF k scan and stability) | `melanoma_k_scan.tsv` |
+| Table 2 (top markers per state) | `melanoma_top15_markers.tsv`, `melanoma_nmf_markers.tsv` |
+| Table 3 (pooled univariable AUROC, permutation P) | `validation/melanoma_univariable_ci.tsv`, `validation/melanoma_random_signature_pvalues.tsv` |
+| Table 4 (repeated 5-fold CV, 50 repeats) | `validation/melanoma_cv_summary.tsv`, `validation/melanoma_cv_benchmark_summary.tsv`, `validation/melanoma_cv_combined_summary.tsv` |
+| Section 3.4 calibration | `validation/melanoma_calibration.tsv` |
+| Sections 3.3 and 3.5 direction stability | `validation/melanoma_direction_stability.tsv` |
+| Random-effects meta-analysis (Methods 2.9) | `validation/melanoma_random_effects_meta.tsv` |
+| Table S1 (full state signatures) | `melanoma_state_signatures.yml` |
+| Table S2 (per-cohort AUROC / AUPRC with CI) | `validation/melanoma_univariable_ci.tsv` |
+| Table S3 (fold-level CV metrics) | `validation/melanoma_cv_folds.tsv` |
+| Figure S2 (lineage overlap) | `melanoma_lineage_info.tsv` |
 
-Structured for scalability, reproducibility, and clarity:
+The same mapping is listed in [`manuscript/supplementary_manifest.md`](manuscript/supplementary_manifest.md).
 
-```text
-├── config/              # Project configuration & state signature YAMLs
-├── data/
-│   ├── manifests/       # Curated source and cohort manifests
-│   ├── raw/             # Downloaded public metadata and raw files
-│   └── processed/       # Derived analysis-ready matrices and tables
-├── docs/                # Methodological notes and execution documentation
-├── notebooks/           # Jupyter notebooks for exploratory data analysis (EDA) and figure generation
-├── results/             # Final analysis outputs, evaluation metrics, and plots
-├── scripts/             # Python CLI wrappers for individual pipeline steps
-├── src/circuit_icb/     # Core Python package (scoring, prioritization, inference logic)
-├── tests/               # Pytest-based unit testing for scoring and prioritization logic
-└── workflow/            # Snakemake workflow orchestrator
-```
+## Reproducing the manuscript
 
-## 💻 Quick Start
-
-Set up your environment and execute the pipeline via the unified CLI scripts:
+Tested with Python 3.11.
 
 ```bash
-# 1. Install the core package in development mode
-python -m pip install -e ".[dev]"
-
-# 2. Build the primary data manifests
-python scripts/00_build_icb_manifest.py
-
-# 3. State Scoring & Target Prioritization (Example Run)
-python scripts/01_score_bulk_states.py \
-    --expression examples/bulk_expression_tpm.tsv \
-    --signatures config/state_signatures.example.yml \
-    --out results/tables/example_state_scores.tsv
-
-python scripts/02_prioritize_targets.py \
-    --evidence examples/target_evidence.tsv \
-    --weights config/target_weights.yml \
-    --out results/tables/example_target_priority.tsv
-
-# 4. End-to-End Discovery Pipeline
-python scripts/04_score_zenodo_pseudobulk.py
-python scripts/05_extract_nmf_states.py
-
-# ... cohort preparation, matrix building, evidence mapping, and evaluation ...
-# (Refer to standard operating procedures in docs/ for full pipeline execution, including scripts 07-27)
-
-# 5. Run test suite to ensure computational integrity
-pytest
+conda env create -f environment.yml
+conda activate circuit-icb
+python -m pip install -e ".[dev,manuscript]"
 ```
 
-## 📊 Primary Data Anchor
+Input data (not tracked in git):
 
-The discovery atlas is deeply anchored to **Zenodo record `14511579`** (Version 4): *"Integrated cancer cell-specific single-cell RNA-seq datasets of immune checkpoint blockade-treated patients"*. 
+1. Malignant-cell pseudobulk CSV files from the public Zenodo compilation of ICB-treated scRNA-seq studies, placed under `data/raw/zenodo/malignant_pseudobulk/`.
+2. Bulk RNA-seq and clinical tables from GEO, prepared by `scripts/07_prepare_geo_bulk.py` into `data/processed/bulk_icb/<cohort>/`. The cohort registry used by the melanoma analysis (`data/manifests/publish_v1_bulk_icb_cohorts.tsv`) is built by `scripts/21_build_publish_v1_cohorts.py`.
 
-> **Note:** The current smoke test automatically downloads and scores the public pseudobulk package from this Zenodo record when present locally.
+Then either run the workflow target
 
-## ⚠️ Claim Boundary & Disclaimer
+```bash
+snakemake --cores 1 manuscript
+```
 
-**CIRCUIT-ICB is a retrospective computational research framework.** Candidate targets, states, and compounds generated by this pipeline represent robust, data-driven **hypotheses for downstream experimental follow-up**, and do not constitute clinical recommendations.
+or the three scripts directly:
 
-*While the `publish_v1` result set meets minimum external-validation sample gates, the leave-one-cohort classifier performance remains modest. Publications utilizing this framework should emphasize its value as a malignant-cell state resource and hypothesis-generation engine rather than a definitive clinical biomarker claim.*
+```bash
+python scripts/30_melanoma_only_pipeline.py   # discovery, scoring and validation -> results/tables/melanoma_only/
+python scripts/40_draw_figures.py             # figures -> manuscript/figures/
+python scripts/41_generate_docx.py            # manuscript/CIRCUIT_ICB_manuscript.docx
+```
 
----
-<div align="center">
-  <i>Built for the future of precision immuno-oncology.</i>
-</div>
+Unit tests: `pytest`.
+
+## Analyses in this repository that are not part of the manuscript
+
+These outputs are kept for transparency. They are not reported in the manuscript and should not be read as part of its claims.
+
+- **Leave-one-cohort-out model (melanoma).** `scripts/30_melanoma_only_pipeline.py` also fits the elastic-net model on one melanoma cohort and tests it on the other, written to `validation/melanoma_leave_one_cohort.tsv`. With only two cohorts of different size and responder rate, this check is unstable: AUROC 0.60 when testing on GSE78220 and 0.37 when testing on GSE91061.
+- **Melanoma states outside melanoma.** The same script scores the melanoma states in three non-melanoma cohorts (GSE126044, GSE135222, GSE176307), written to `validation/generalization_univariable_ci.tsv`. Pooled AUROCs are 0.52 to 0.59, and STATE_05 changes direction, so the melanoma states are not expected to transfer across cancer types.
+- **Earlier pan-cancer analysis (`publish_v1`).** Before the melanoma-focused study, the framework was run on pan-cancer discovery data with a separate 7-state NMF and validated in six bulk cohorts (212 samples). Pooled AUROCs were 0.55 to 0.56, leave-one-cohort mean AUROC was 0.48, and none of the four primary states was significant against size-matched random signatures. This analysis is documented in [`docs/publish_v1_validation_report.md`](docs/publish_v1_validation_report.md) and [`docs/manuscript_ready_results_summary.md`](docs/manuscript_ready_results_summary.md). Its result tables are not committed. The repository name reflects this original pan-cancer scope.
+- **Target-evidence modules** (DepMap, PRISM, LINCS, HPA, TCGA Xena, CPTAC adapter; scripts 09 to 27) come from the pan-cancer scope and are not used in the manuscript.
+- **Project planning notes** from the original pan-cancer design are in [`docs/planning/`](docs/planning/).
+
+## Repository layout
+
+```text
+config/              state, benchmark and pathway signature files; project config
+docs/                method notes; pan-cancer (publish_v1) reports; planning/ notes
+examples/            toy inputs for the smoke test
+manuscript/          manuscript source, supplementary manifest, cover letter summary
+results/tables/      melanoma_only/ holds every table behind the manuscript
+scripts/             numbered pipeline steps (30 = manuscript analysis, 40-41 = figures and docx)
+src/circuit_icb/     core package: NMF states, scoring, validation
+tests/               pytest unit tests
+workflow/Snakefile   Snakemake workflow (target `manuscript` reproduces the paper)
+```
+
+`data/` is created locally when the pipeline runs and is not tracked.
+
+## Scope and limitations
+
+The validation in the manuscript is retrospective and uses 76 patients from two cohorts. The states are candidates for testing in larger melanoma cohorts. They are not a clinical decision tool.

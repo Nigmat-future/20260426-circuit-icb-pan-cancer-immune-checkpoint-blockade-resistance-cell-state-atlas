@@ -1,5 +1,7 @@
 # Manuscript-Ready Results Summary
 
+> **Scope note.** This document belongs to the earlier pan-cancer `publish_v1` analysis and is not part of the melanoma manuscript (`manuscript/manuscript.md`). See the README for the files behind the manuscript. Here "manuscript" means a planned pan-cancer resource paper, not the submitted melanoma manuscript.
+
 ## Recommended Framing
 
 CIRCUIT-ICB should be framed as a reproducible malignant-cell ICB resistance-state atlas and multi-omics target-prioritization resource. The strongest claim is not classifier performance; it is the end-to-end resource linking patient-derived malignant states, external ICB cohorts, TCGA state context, DepMap/PRISM/LINCS evidence, and transparent candidate-target ranking.

@@ -1,5 +1,7 @@
 # Execution Plan
 
+> **Scope note.** This document belongs to the earlier pan-cancer `publish_v1` analysis and is not part of the melanoma manuscript (`manuscript/manuscript.md`). See the README for the files behind the manuscript.
+
 ## 72-Hour Milestone
 
 1. Freeze public source registry and Zenodo metadata manifest.

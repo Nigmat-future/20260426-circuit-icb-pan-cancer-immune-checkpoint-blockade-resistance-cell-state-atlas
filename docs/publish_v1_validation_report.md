@@ -1,5 +1,7 @@
 # Publish V1 Validation Report
 
+> **Scope note.** This document belongs to the earlier pan-cancer `publish_v1` analysis and is not part of the melanoma manuscript (`manuscript/manuscript.md`). See the README for the files behind the manuscript.
+
 Generated on 2026-04-26.
 
 ## Cohort Gate

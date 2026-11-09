@@ -1,6 +1,42 @@
 configfile: "config/project.yaml"
 
 
+# Tables behind the melanoma manuscript (manuscript/manuscript.md),
+# all written by scripts/30_melanoma_only_pipeline.py.
+MEL = "results/tables/melanoma_only"
+MELANOMA_TABLES = [
+    f"{MEL}/melanoma_pseudobulk_metadata.tsv",
+    f"{MEL}/melanoma_k_scan.tsv",
+    f"{MEL}/melanoma_lineage_info.tsv",
+    f"{MEL}/melanoma_nmf_activity.tsv",
+    f"{MEL}/melanoma_nmf_loadings.tsv",
+    f"{MEL}/melanoma_nmf_markers.tsv",
+    f"{MEL}/melanoma_nmf_metrics.tsv",
+    f"{MEL}/melanoma_top15_markers.tsv",
+    f"{MEL}/melanoma_state_signatures.yml",
+    f"{MEL}/melanoma_all_scores.tsv",
+    f"{MEL}/validation/melanoma_univariable_ci.tsv",
+    f"{MEL}/validation/melanoma_random_effects_meta.tsv",
+    f"{MEL}/validation/melanoma_direction_stability.tsv",
+    f"{MEL}/validation/melanoma_circuit_vs_benchmark.tsv",
+    f"{MEL}/validation/melanoma_cv_folds.tsv",
+    f"{MEL}/validation/melanoma_cv_predictions.tsv",
+    f"{MEL}/validation/melanoma_calibration.tsv",
+    f"{MEL}/validation/melanoma_cv_summary.tsv",
+    f"{MEL}/validation/melanoma_cv_benchmark_summary.tsv",
+    f"{MEL}/validation/melanoma_cv_combined_summary.tsv",
+    f"{MEL}/validation/melanoma_leave_one_cohort.tsv",
+    f"{MEL}/validation/melanoma_random_signature_null.tsv",
+    f"{MEL}/validation/melanoma_random_signature_pvalues.tsv",
+]
+MANUSCRIPT_FIGURES = expand(
+    "manuscript/figures/{fig}.{ext}",
+    fig=["fig1_k_scan", "fig2_markers", "fig3_auroc_permutation",
+         "fig4_cv_calibration", "fig5_direction_stability"],
+    ext=["pdf", "png"],
+)
+
+
 rule all:
     input:
         "data/raw/zenodo/zenodo_14511579_files.tsv",
@@ -30,7 +66,8 @@ rule all:
         "results/tables/publish_v1/tcga/tcga_state_scores.tsv",
         "results/tables/publish_v1/cptac/cptac_protein_evidence_status.tsv",
         "results/tables/example_target_priority.tsv",
-        "results/tables/release_index.tsv"
+        "results/tables/release_index.tsv",
+        MELANOMA_TABLES
 
 
 rule fetch_zenodo_metadata:
@@ -416,3 +453,45 @@ rule release_index:
         "results/tables/release_index.tsv"
     shell:
         "python scripts/03_make_release_tables.py --results-dir results/tables --out {output}"
+
+
+# ---------------------------------------------------------------------------
+# Melanoma manuscript: `snakemake --cores 1 manuscript`
+# ---------------------------------------------------------------------------
+
+rule manuscript:
+    input:
+        MELANOMA_TABLES,
+        MANUSCRIPT_FIGURES,
+        "manuscript/CIRCUIT_ICB_manuscript.docx"
+
+
+rule melanoma_manuscript_analysis:
+    input:
+        pseudobulk="data/raw/zenodo/malignant_pseudobulk",
+        registry="data/manifests/publish_v1_bulk_icb_cohorts.tsv",
+        benchmark="config/benchmark_signatures.yml"
+    output:
+        MELANOMA_TABLES
+    shell:
+        "python scripts/30_melanoma_only_pipeline.py"
+
+
+rule manuscript_figures:
+    input:
+        MELANOMA_TABLES
+    output:
+        MANUSCRIPT_FIGURES
+    shell:
+        "python scripts/40_draw_figures.py"
+
+
+rule manuscript_docx:
+    input:
+        "manuscript/manuscript.md",
+        MELANOMA_TABLES,
+        MANUSCRIPT_FIGURES
+    output:
+        "manuscript/CIRCUIT_ICB_manuscript.docx"
+    shell:
+        "python scripts/41_generate_docx.py"

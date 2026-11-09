@@ -1,5 +1,7 @@
 # Target Scoring
 
+> **Scope note.** This document belongs to the earlier pan-cancer `publish_v1` analysis and is not part of the melanoma manuscript (`manuscript/manuscript.md`). See the README for the files behind the manuscript.
+
 ## Evidence Components
 
 Each target receives independent evidence values from 0 to 1:

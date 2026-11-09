@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "circuit-icb"
 version = "0.1.0"
-description = "Cell-state-resolved and perturbation-aware framework for ICB resistance analysis"
+description = "NMF-based discovery of malignant cell states associated with immune checkpoint blockade resistance"
 requires-python = ">=3.10"
 dependencies = [
   "numpy",
@@ -21,6 +21,12 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest",
+]
+# Figures and docx for the manuscript (scripts 40 and 41)
+manuscript = [
+  "matplotlib",
+  "seaborn",
+  "python-docx",
 ]
 
 [tool.setuptools.packages.find]
